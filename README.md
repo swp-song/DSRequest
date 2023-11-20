@@ -27,7 +27,7 @@ The [Swift Package Manager](https://swift.org/package-manager/) is a tool for au
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/swp-song/DSRequest.git", .upToNextMajor(from: "1.0.0"))
+    .package(url: "https://github.com/swp-song/DSRequest.git", .upToNextMajor(from: "1.1.0"))
 ]
 ```
 
@@ -37,7 +37,7 @@ dependencies: [
 
 ```swift
 dependencies: [
-    .package(url: "https://gitee.com/dream-swp/DSRequest.git", .upToNextMajor(from: "1.0.0"))
+    .package(url: "https://gitee.com/dream-swp/DSRequest.git", .upToNextMajor(from: "1.1.0"))
 ]
 ```
 
