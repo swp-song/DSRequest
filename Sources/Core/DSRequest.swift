@@ -10,7 +10,13 @@ import Combine
 
 /// Request Network Components
 public struct DSRequest {
+    
+    /// Default Initializer
     public static let `default` = DSRequest()
+    
+    /// `Request Modifier`
+    public typealias RequestModifier = (inout URLRequest) throws -> Void
+    
     private init() { }
 }
 extension DSRequest: DSCompatible { }
@@ -41,33 +47,37 @@ public extension DS where DS == DSRequest {
     
     /// GET Request
     /// - Parameters:
-    ///   - url:        Request `url`
-    ///   - parameters: Request `parameters`
-    ///   - encoding:   Request `encoding`
-    ///   - headers:    Request `headers`
-    /// - Returns:      Server Request Information
+    ///   - url:                Request `url`
+    ///   - parameters:         Request `parameters`
+    ///   - encoding:           Request `encoding`
+    ///   - headers:            Request `headers`
+    ///   - requestModifier:    Request `Request`
+    /// - Returns:              Server Request Information
     func get(url: String,
              parameters: DSParameters? = nil,
              encoding: DSEncoding =  DSURLEncoding.default,
-             headers: DSHeaders? = nil) -> AnyPublisher<Data, Error> {
-        return request(url: url, method: .get, parameters: parameters, encoding: encoding, headers: headers)
+             headers: DSHeaders? = nil,
+             requestModifier: DSRequest.RequestModifier? = nil) -> AnyPublisher<Data, Error> {
+        return request(url: url, method: .get, parameters: parameters, encoding: encoding, headers: headers, requestModifier: requestModifier)
     }
-    
+
     
     /// GET Request
     /// - Parameters:
-    ///   - url:        Request `url`
-    ///   - parameters: Request `parameters`
-    ///   - encoding:   Request `encoding`
-    ///   - headers:    Request `headers`
-    ///   - model:      Request `Data Conversion Model`
-    /// - Returns:      Server Request Information and `Model`
+    ///   - url:                Request `url`
+    ///   - parameters:         Request `parameters`
+    ///   - encoding:           Request `encoding`
+    ///   - headers:            Request `headers`
+    ///   - model:              Request `Data Conversion Model`
+    ///   - requestModifier:    Request `Request`
+    /// - Returns:              Server Request Information and `Model`
     func get<Itme>(url: String,
                    parameters: DSParameters? = nil,
                    encoding: DSEncoding =  DSURLEncoding.default,
                    headers: DSHeaders? = nil,
-                   model: Itme.Type) -> AnyPublisher<Itme, Error> where Itme: Codable {
-        return request(url: url, method: .get, parameters: parameters, encoding: encoding, headers: headers, model: model)
+                   model: Itme.Type,
+                   requestModifier: DSRequest.RequestModifier? = nil) -> AnyPublisher<Itme, Error> where Itme: Codable {
+        return request(url: url, method: .get, parameters: parameters, encoding: encoding, headers: headers, requestModifier: requestModifier, model: model)
     }
 }
 // MARK: -
@@ -78,33 +88,36 @@ public extension DS where DS == DSRequest {
     
     /// POST Request
     /// - Parameters:
-    ///   - url:        Request `url`
-    ///   - parameters: Request `parameters`
-    ///   - encoding:   Request `encoding`
-    ///   - headers:    Request `headers`
-    /// - Returns:      Server Request Information
+    ///   - url:                Request `url`
+    ///   - parameters:         Request `parameters`
+    ///   - encoding:           Request `encoding`
+    ///   - headers:            Request `headers`
+    ///   - requestModifier:    Request `Request`
+    /// - Returns:              Server Request Information
     func post(url: String,
               parameters: DSParameters? = nil,
               encoding: DSEncoding = DSJSONEncoding.prettyPrinted,
-              headers: DSHeaders? = nil) -> AnyPublisher<Data, Error> {
+              headers: DSHeaders? = nil,
+              requestModifier: DSRequest.RequestModifier? = nil) -> AnyPublisher<Data, Error> {
         return request(url: url, method: .post, parameters: parameters, encoding: encoding, headers: headers)
     }
     
-    
     /// POST Request
     /// - Parameters:
-    ///   - url:        Request `url`
-    ///   - parameters: Request `parameters`
-    ///   - encoding:   Request `encoding`
-    ///   - headers:    Request `headers`
-    ///   - model:      Request `Data Conversion Model`
-    /// - Returns:      Server Request Information and `Model`
+    ///   - url:                Request `url`
+    ///   - parameters:         Request `parameters`
+    ///   - encoding:           Request `encoding`
+    ///   - headers:            Request `headers`
+    ///   - requestModifier:    Request `Request`
+    ///   - model:              Request `Data Conversion Mode
+    /// - Returns:              Server Request Information and `Model`
     func post<Itme>(url: String,
                     parameters: DSParameters? = nil,
                     encoding: DSEncoding = DSJSONEncoding.prettyPrinted,
                     headers: DSHeaders? = nil, 
+                    requestModifier: DSRequest.RequestModifier? = nil,
                     model: Itme.Type) -> AnyPublisher<Itme, Error> where Itme: Codable {
-        return request(url: url, method: .post, parameters: parameters, encoding: encoding, headers: headers, model: model)
+        return request(url: url, method: .post, parameters: parameters, encoding: encoding, headers: headers, requestModifier: requestModifier, model: model)
     }
 }
 
@@ -127,9 +140,10 @@ public extension DS where DS == DSRequest {
                  method: DSMethod = .get,
                  parameters: DSParameters? = nil,
                  encoding: DSEncoding = DSURLEncoding.default,
-                 headers: DSHeaders? = nil) -> AnyPublisher<Data, Error> {
+                 headers: DSHeaders? = nil,
+                 requestModifier: DSRequest.RequestModifier? = nil) -> AnyPublisher<Data, Error> {
         
-        guard let request = convertible(url: url, method: method, parameters: parameters, encoding: encoding, headers: headers) else {
+        guard let request = convertible(url: url, method: method, parameters: parameters, encoding: encoding, headers: headers, requestModifier: requestModifier) else {
             return Fail(error: DSError.urlError)
                 .eraseToAnyPublisher()
         }
@@ -164,8 +178,9 @@ public extension DS where DS == DSRequest {
                        parameters: DSParameters? = nil,
                        encoding: DSEncoding = DSURLEncoding.default,
                        headers: DSHeaders? = nil,
+                       requestModifier: DSRequest.RequestModifier?,
                        model: Itme.Type) -> AnyPublisher<Itme, Error> where Itme: Codable {
-        return request(url: url, method: method, parameters: parameters, encoding: encoding, headers: headers)
+        return request(url: url, method: method, parameters: parameters, encoding: encoding, headers: headers, requestModifier: requestModifier)
             .decode(type: model, decoder: DSRequest.ds.decoder)
             .eraseToAnyPublisher()
     }
@@ -188,8 +203,10 @@ private extension DS where DS == DSRequest  {
                      method: DSMethod,
                      parameters: DSParameters?,
                      encoding: DSEncoding,
-                     headers: DSHeaders?) -> URLRequest? {
-        guard let request = try? URLRequest(url: url, method: method, headers: headers) else { return nil }
+                     headers: DSHeaders?,
+                     requestModifier: DSRequest.RequestModifier?) -> URLRequest? {
+        guard var request = try? URLRequest(url: url, method: method, headers: headers) else { return nil }
+        try? requestModifier?(&request)
         return try? encoding.encode(request, with: parameters);
     }
 }
