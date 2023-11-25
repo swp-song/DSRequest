@@ -2,50 +2,36 @@
 
 ----
 
-
-
 ## DSRequest
 
 * SwiftUI 一个简单的网络请求库，`MacOS`， `iPhone`，`iPad`，`tvOS` 和  `watchOS`。
 
-
-
 ----
-
-
 
 ## 安装 ( Installation ) 
 
 #### Swift Package Manager
 
-
 The [Swift Package Manager](https://swift.org/package-manager/) is a tool for automating the distribution of Swift code and is integrated into the `swift` compiler
-
 
 
 ##### GitHub
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/swp-song/DSRequest.git", .upToNextMajor(from: "1.1.0"))
+    .package(url: "https://github.com/swp-song/DSRequest.git", .upToNextMajor(from: "1.2.0"))
 ]
 ```
-
-
 
 ##### Gitee ( 国内 )
 
 ```swift
 dependencies: [
-    .package(url: "https://gitee.com/dream-swp/DSRequest.git", .upToNextMajor(from: "1.1.0"))
+    .package(url: "https://gitee.com/dream-swp/DSRequest.git", .upToNextMajor(from: "1.2.0"))
 ]
 ```
 
-
-
 ----
-
-
 
 ## 使用 ( Use )
 
@@ -70,8 +56,6 @@ DSRequest.default.ds
     .seal(in: token)
 ```
 
-
-
 #### POST
 
 ```swift
@@ -94,8 +78,6 @@ DSRequest.default.ds
     }
     .seal(in: token)
 ```
-
-
 
 ----
 

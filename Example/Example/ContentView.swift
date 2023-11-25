@@ -14,7 +14,7 @@ struct ContentView: View {
     var body: some View {
         VStack(spacing: 20) {
             Button("Get") {
-                 
+                
                 let token = AnyCancellable.Token()
                 DSRequest.default.ds
                     .get(url: "https://api.vvhan.com/api/love", parameters: ["type":"json"])
